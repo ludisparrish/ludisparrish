@@ -1,0 +1,52 @@
+{
+	"info": {
+		"name": "E-Commerce API Testing Portfolio",
+		"description": "Commercial-grade Postman collection for validating cart transactions and warehouse stock reservation flows on Staging environments. Accessible exclusively via Corporate VPN at internal endpoint http://10.160.24.91:8000. Author: Gleb Ludis (ludisparrish)",
+		"schema": "https://getpostman.com"
+	},
+	"item": [
+		{
+			"name": "Get Product Catalog List (Inventory Check)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{ "key": "X-Client-Id", "value": "qa_mobile_client_v3" }
+				],
+				"url": {
+					"raw": "http://10.160.24api/v2/products?category=electronics&status=in_stock",
+					"protocol": "http",
+					"host": ["10", "160", "24", "91"],
+					"port": "8000",
+					"path": ["api", "v2", "products"],
+					"query": [
+						{ "key": "category", "value": "electronics" },
+						{ "key": "status", "value": "in_stock" }
+					]
+				},
+				"description": "QA Scenario: Validating catalog microservice response under staging load. Verifies 200 OK status and JSON schema conformity for internal product stock levels."
+			}
+		},
+		{
+			"name": "Create New Order (Stock Reservation)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{ "key": "Content-Type", "value": "application/json" },
+					{ "key": "Authorization", "value": "Bearer jwt_token_ludisparrish_staging" }
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user_id\": 4992,\n    \"cart_items\": [\n        {\n            \"sku_id\": \"SKU-9942-ELECTRONIC\",\n            \"quantity\": 1\n        }\n    ],\n    \"delivery_region\": \"Minsk\",\n    \"payment_gateway\": \"stripe_internal\"\n}"
+				},
+				"url": {
+					"raw": "http://10.160.24api/v2/orders/checkout",
+					"protocol": "http",
+					"host": ["10", "160", "24", "91"],
+					"port": "8000",
+					"path": ["api", "v2", "orders", "checkout"]
+				},
+				"description": "QA Scenario: Verifies transactional database safety and instant stock reduction upon successful checkout. Checks for 201 Created and WMS updates."
+			}
+		}
+	]
+}
