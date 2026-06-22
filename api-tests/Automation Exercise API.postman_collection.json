@@ -11,25 +11,153 @@
       "item": [
         {
           "name": "GET All Products List",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 1. Status code is 200",
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// 2. Response time is acceptable",
+                  "pm.test(\"Response time is less than 2000ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});",
+                  "",
+                  "// 3. Response has responseCode 200",
+                  "pm.test(\"Response body has responseCode 200\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.responseCode).to.eql(200);",
+                  "});",
+                  "",
+                  "// 4. Products array exists and is not empty",
+                  "pm.test(\"Products list is not empty\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.products).to.be.an(\"array\");",
+                  "    pm.expect(json.products.length).to.be.above(0);",
+                  "});",
+                  "",
+                  "// 5. First product has required fields",
+                  "pm.test(\"Product object has required fields\", function () {",
+                  "    const json = pm.response.json();",
+                  "    const product = json.products[0];",
+                  "    pm.expect(product).to.have.property(\"id\");",
+                  "    pm.expect(product).to.have.property(\"name\");",
+                  "    pm.expect(product).to.have.property(\"price\");",
+                  "    pm.expect(product).to.have.property(\"brand\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "method": "GET",
-            "header": []
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/productsList",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "productsList"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "POST To All Products List",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 1. Status code is 200",
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// 2. Response code is 405 — POST method not supported",
+                  "pm.test(\"POST method not supported — responseCode is 405\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.responseCode).to.eql(405);",
+                  "});",
+                  "",
+                  "// 3. Error message exists",
+                  "pm.test(\"Response contains error message\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.message).to.be.a(\"string\");",
+                  "    pm.expect(json.message.length).to.be.above(0);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
-            "method": "GET",
-            "header": []
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/productsList",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "productsList"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "PUT To All Brands List",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"PUT method not supported — responseCode is 405\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.responseCode).to.eql(405);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains error message\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.message).to.be.a(\"string\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
-            "method": "GET",
-            "header": []
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/brandsList",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "brandsList"
+              ]
+            }
           },
           "response": []
         }
@@ -40,57 +168,544 @@
       "item": [
         {
           "name": "POST Create User Account",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Account created successfully — responseCode is 201\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.responseCode).to.eql(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Success message exists\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.message).to.eql(\"User created!\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
-            "method": "GET",
-            "header": []
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "API TestUser",
+                  "type": "text"
+                },
+                {
+                  "key": "email",
+                  "value": "apitestuser390928@test.com",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "Test1234!",
+                  "type": "text"
+                },
+                {
+                  "key": "title",
+                  "value": "Mr",
+                  "type": "text"
+                },
+                {
+                  "key": "birth_date",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "birth_month",
+                  "value": "January",
+                  "type": "text"
+                },
+                {
+                  "key": "birth_year",
+                  "value": "1990",
+                  "type": "text"
+                },
+                {
+                  "key": "firstname",
+                  "value": "John",
+                  "type": "text"
+                },
+                {
+                  "key": "lastname",
+                  "value": "Doe",
+                  "type": "text"
+                },
+                {
+                  "key": "company",
+                  "value": "TestCo",
+                  "type": "text"
+                },
+                {
+                  "key": "address1",
+                  "value": "123 Main St",
+                  "type": "text"
+                },
+                {
+                  "key": "address2",
+                  "value": "Apt 1",
+                  "type": "text"
+                },
+                {
+                  "key": "country",
+                  "value": "United States",
+                  "type": "text"
+                },
+                {
+                  "key": "zipcode",
+                  "value": "90001",
+                  "type": "text"
+                },
+                {
+                  "key": "state",
+                  "value": "California",
+                  "type": "text"
+                },
+                {
+                  "key": "city",
+                  "value": "Los Angeles",
+                  "type": "text"
+                },
+                {
+                  "key": "mobile_number",
+                  "value": "1234567890",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/createAccount",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "createAccount"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "GET Verify Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"GET method not supported — responseCode is 405\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.responseCode).to.eql(405);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains error message\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.message).to.be.a(\"string\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "method": "GET",
-            "header": []
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/verifyLogin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "verifyLogin"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "POST Verify Login — valid credentials",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Login successful — responseCode is 200\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.responseCode).to.eql(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Success message is correct\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.message).to.eql(\"User exists!\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
-            "method": "GET",
-            "header": []
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "email",
+                  "value": "apitestuser390928@test.com",
+                  "type": "text",
+                  "uuid": "61f9b842-444e-4d2a-b2e5-7dbd06af41a5"
+                },
+                {
+                  "key": "password",
+                  "value": "Test1234!",
+                  "type": "text",
+                  "uuid": "e604e198-c067-4457-8c68-262ec75f37ef"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/verifyLogin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "verifyLogin"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "POST Verify Login (invalid)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Invalid login — responseCode is 404\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.responseCode).to.eql(404);",
+                  "});",
+                  "",
+                  "pm.test(\"Error message exists\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.message).to.be.a(\"string\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
-            "method": "GET",
-            "header": []
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{base_url}}/api/verifyLogin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "verifyLogin"
+              ],
+              "query": [
+                {
+                  "key": "email",
+                  "value": "wrongemail@test.com",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "password",
+                  "value": "WrongPass999",
+                  "type": "text",
+                  "disabled": true
+                }
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "POST Verify Login — missing email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Missing email — responseCode is 400\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.responseCode).to.eql(400);",
+                  "});",
+                  "",
+                  "pm.test(\"Error message exists\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.message).to.be.a(\"string\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
-            "method": "GET",
-            "header": []
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "password",
+                  "value": "Test1234!",
+                  "type": "text",
+                  "uuid": "0bc388f6-a469-4d0e-9247-4ecb5665699a"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/verifyLogin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "verifyLogin"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "GET User Account Detail",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"User detail returned — responseCode is 200\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.responseCode).to.eql(200);",
+                  "});",
+                  "",
+                  "pm.test(\"User object has required fields\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.user).to.have.property(\"id\");",
+                  "    pm.expect(json.user).to.have.property(\"name\");",
+                  "    pm.expect(json.user).to.have.property(\"email\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
           "request": {
             "method": "GET",
-            "header": []
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{base_url}}/api/getUserDetailByEmail?email=apitestuser390928@test.com",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "getUserDetailByEmail"
+              ],
+              "query": [
+                {
+                  "key": "email",
+                  "value": "apitestuser390928@test.com",
+                  "type": "text"
+                }
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "PUT Update User Account",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Account updated — responseCode is 200\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.responseCode).to.eql(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Success message is correct\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.message).to.eql(\"User updated!\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
-            "method": "GET",
-            "header": []
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "API TestUser Updated",
+                  "type": "text"
+                },
+                {
+                  "key": "email",
+                  "value": "apitestuser390928@test.com",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "Test1234!",
+                  "type": "text"
+                },
+                {
+                  "key": "title",
+                  "value": "Mr",
+                  "type": "text"
+                },
+                {
+                  "key": "birth_date",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "birth_month",
+                  "value": "January",
+                  "type": "text"
+                },
+                {
+                  "key": "birth_year",
+                  "value": "1990",
+                  "type": "text"
+                },
+                {
+                  "key": "firstname",
+                  "value": "John",
+                  "type": "text"
+                },
+                {
+                  "key": "lastname",
+                  "value": "Updated",
+                  "type": "text"
+                },
+                {
+                  "key": "company",
+                  "value": "TestCo",
+                  "type": "text"
+                },
+                {
+                  "key": "address1",
+                  "value": "456 New St",
+                  "type": "text"
+                },
+                {
+                  "key": "address2",
+                  "value": "Apt 2",
+                  "type": "text"
+                },
+                {
+                  "key": "country",
+                  "value": "United States",
+                  "type": "text"
+                },
+                {
+                  "key": "zipcode",
+                  "value": "90002",
+                  "type": "text"
+                },
+                {
+                  "key": "state",
+                  "value": "California",
+                  "type": "text"
+                },
+                {
+                  "key": "city",
+                  "value": "San Francisco",
+                  "type": "text"
+                },
+                {
+                  "key": "mobile_number",
+                  "value": "9876543210",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/updateAccount",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "updateAccount"
+              ]
+            }
           },
           "response": []
         }
@@ -101,17 +716,98 @@
       "item": [
         {
           "name": "POST Search Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Search returned results — responseCode is 200\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.responseCode).to.eql(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Products array is not empty\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.products).to.be.an(\"array\");",
+                  "    pm.expect(json.products.length).to.be.above(0);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
-            "method": "GET",
-            "header": []
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "search_product",
+                  "value": "dress",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/searchProduct",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "searchProduct"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "POST Search Product — missing parameter",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Missing parameter — responseCode is 400\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.responseCode).to.eql(400);",
+                  "});",
+                  "",
+                  "pm.test(\"Error message exists\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.message).to.be.a(\"string\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
-            "method": "GET",
-            "header": []
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/searchProduct",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "searchProduct"
+              ]
+            }
           },
           "response": []
         }
