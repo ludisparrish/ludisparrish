@@ -1,0 +1,2 @@
+cd playwright-tests
+npm run lint
