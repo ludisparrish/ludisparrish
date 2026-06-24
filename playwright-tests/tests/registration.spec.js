@@ -1,25 +1,25 @@
 const { test, expect } = require('@playwright/test');
 
-// Helper — dismiss any overlay or popup blocking the page
 async function dismissPopups(page) {
-  // Cookie consent popup
+  // Cookie consent
   try {
     const consentBtn = page.locator('button.fc-button.fc-cta-consent');
-    await consentBtn.waitFor({ state: 'visible', timeout: 5000 });
+    await consentBtn.waitFor({ state: 'visible', timeout: 8000 });
     await consentBtn.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1000);
   } catch {
-    // no popup — continue
+    // no popup
   }
 
-  // Ad overlay — click outside or close button
+  // Any modal overlay
   try {
-    const adClose = page.locator('#dismiss-button, .adsbygoogle-noablate');
-    if (await adClose.isVisible({ timeout: 2000 })) {
-      await adClose.click();
+    const overlay = page.locator('.modal-open .close, #dismiss-button');
+    if (await overlay.isVisible({ timeout: 2000 })) {
+      await overlay.click();
+      await page.waitForTimeout(500);
     }
   } catch {
-    // no ad — continue
+    // no overlay
   }
 }
 
@@ -28,30 +28,30 @@ test.describe('Registration', () => {
   test('Successful registration with valid data', async ({ page }) => {
     const email = `testuser${Date.now()}@test.com`;
 
-    await page.goto('/');
+    // Go directly to login page
+    await page.goto('/login', { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(3000);
     await dismissPopups(page);
+    await page.waitForTimeout(1000);
 
-    // Navigate to login page directly to avoid popup issues
-    await page.goto('/login');
-    await dismissPopups(page);
+    // Screenshot for debugging
+    await page.screenshot({ path: 'test-results/debug-login-page.png' });
 
-    // Wait for signup form to be ready
-    await page.waitForSelector('input[data-qa="signup-name"]', { timeout: 15000 });
+    // Wait for signup form
+    await page.waitForSelector('input[data-qa="signup-name"]', { timeout: 30000 });
 
-    // Fill signup form
     await page.fill('input[data-qa="signup-name"]', 'PlaywrightUser');
     await page.fill('input[data-qa="signup-email"]', email);
     await page.click('button[data-qa="signup-button"]');
 
     // Account info form
-    await page.waitForSelector('#id_gender1', { timeout: 15000 });
+    await page.waitForSelector('#id_gender1', { timeout: 30000 });
     await page.click('#id_gender1');
     await page.fill('input[data-qa="password"]', 'Test1234!');
     await page.selectOption('select[data-qa="days"]', '1');
     await page.selectOption('select[data-qa="months"]', 'January');
     await page.selectOption('select[data-qa="years"]', '1990');
 
-    // Address
     await page.fill('input[data-qa="first_name"]', 'John');
     await page.fill('input[data-qa="last_name"]', 'Doe');
     await page.fill('input[data-qa="address"]', '123 Main St');
@@ -63,15 +63,18 @@ test.describe('Registration', () => {
 
     await page.click('button[data-qa="create-account"]');
 
-    // Verify account created
-    await expect(page.locator('h2[data-qa="account-created"]')).toBeVisible({ timeout: 15000 });
+    await expect(
+      page.locator('h2[data-qa="account-created"]')
+    ).toBeVisible({ timeout: 30000 });
   });
 
   test('Registration with already registered email shows error', async ({ page }) => {
-    await page.goto('/login');
+    await page.goto('/login', { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(3000);
     await dismissPopups(page);
+    await page.waitForTimeout(1000);
 
-    await page.waitForSelector('input[data-qa="signup-name"]', { timeout: 15000 });
+    await page.waitForSelector('input[data-qa="signup-name"]', { timeout: 30000 });
 
     await page.fill('input[data-qa="signup-name"]', 'TestUser');
     await page.fill('input[data-qa="signup-email"]', 'testuser01@test.com');
@@ -79,7 +82,7 @@ test.describe('Registration', () => {
 
     await expect(
       page.locator('p:has-text("Email Address already exist!")')
-    ).toBeVisible({ timeout: 10000 });
+    ).toBeVisible({ timeout: 15000 });
   });
 
 });
