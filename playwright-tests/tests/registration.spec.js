@@ -1,14 +1,25 @@
 const { test, expect } = require('@playwright/test');
 
-// Helper — close cookie popup if it appears
-async function closeCookiePopup(page) {
+// Helper — dismiss any overlay or popup blocking the page
+async function dismissPopups(page) {
+  // Cookie consent popup
   try {
-    const acceptBtn = page.locator('button.fc-button.fc-cta-consent');
-    if (await acceptBtn.isVisible({ timeout: 3000 })) {
-      await acceptBtn.click();
+    const consentBtn = page.locator('button.fc-button.fc-cta-consent');
+    await consentBtn.waitFor({ state: 'visible', timeout: 5000 });
+    await consentBtn.click();
+    await page.waitForTimeout(500);
+  } catch {
+    // no popup — continue
+  }
+
+  // Ad overlay — click outside or close button
+  try {
+    const adClose = page.locator('#dismiss-button, .adsbygoogle-noablate');
+    if (await adClose.isVisible({ timeout: 2000 })) {
+      await adClose.click();
     }
   } catch {
-    // popup did not appear — continue
+    // no ad — continue
   }
 }
 
@@ -17,11 +28,15 @@ test.describe('Registration', () => {
   test('Successful registration with valid data', async ({ page }) => {
     const email = `testuser${Date.now()}@test.com`;
 
-    await page.goto('https://automationexercise.com');
-    await closeCookiePopup(page);
+    await page.goto('/');
+    await dismissPopups(page);
 
-    await page.click('a[href="/login"]');
-    await closeCookiePopup(page);
+    // Navigate to login page directly to avoid popup issues
+    await page.goto('/login');
+    await dismissPopups(page);
+
+    // Wait for signup form to be ready
+    await page.waitForSelector('input[data-qa="signup-name"]', { timeout: 15000 });
 
     // Fill signup form
     await page.fill('input[data-qa="signup-name"]', 'PlaywrightUser');
@@ -29,6 +44,7 @@ test.describe('Registration', () => {
     await page.click('button[data-qa="signup-button"]');
 
     // Account info form
+    await page.waitForSelector('#id_gender1', { timeout: 15000 });
     await page.click('#id_gender1');
     await page.fill('input[data-qa="password"]', 'Test1234!');
     await page.selectOption('select[data-qa="days"]', '1');
@@ -48,18 +64,22 @@ test.describe('Registration', () => {
     await page.click('button[data-qa="create-account"]');
 
     // Verify account created
-    await expect(page.locator('h2[data-qa="account-created"]')).toBeVisible();
+    await expect(page.locator('h2[data-qa="account-created"]')).toBeVisible({ timeout: 15000 });
   });
 
   test('Registration with already registered email shows error', async ({ page }) => {
-    await page.goto('https://automationexercise.com/login');
-    await closeCookiePopup(page);
+    await page.goto('/login');
+    await dismissPopups(page);
+
+    await page.waitForSelector('input[data-qa="signup-name"]', { timeout: 15000 });
 
     await page.fill('input[data-qa="signup-name"]', 'TestUser');
     await page.fill('input[data-qa="signup-email"]', 'testuser01@test.com');
     await page.click('button[data-qa="signup-button"]');
 
-    await expect(page.locator('p:has-text("Email Address already exist!")')).toBeVisible();
+    await expect(
+      page.locator('p:has-text("Email Address already exist!")')
+    ).toBeVisible({ timeout: 10000 });
   });
 
 });
