@@ -103,4 +103,4 @@ QA Engineer with background in e-commerce / FMCG operations.
 Former inventory specialist at a darkstore — hands-on experience with order management,  
 stock control and supply chain processes that directly maps to testing e-commerce systems.
 
-**Contact:** [LinkedIn](https://www.linkedin.com/in/gleb-ludis-1a4253229/) | [Email](glebludis@gmail.com) | [Telegram] (https://t.me/glebludisgit add .)
+**Contact:** [LinkedIn](https://www.linkedin.com/in/gleb-ludis-1a4253229/) | [Email](glebludis@gmail.com) | [Telegram] (https://t.me/glebludisgit)
